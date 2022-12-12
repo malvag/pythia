@@ -1,0 +1,13 @@
+{
+    "files.associations": {
+        "*.c": "c",
+        "stdint.h": "c",
+        "pythia_table.h": "c",
+        "thread": "c",
+        "unordered_map": "c",
+        "unordered_set": "c",
+        "compare": "c",
+        "stdio.h": "c"
+    },
+    "C_Cpp.default.configurationProvider": "ms-vscode.makefile-tools"
+}

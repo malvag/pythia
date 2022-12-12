@@ -1,0 +1,3 @@
+As we explain shortly, it is based on a novel recursively split-ordered list structure.
+
+What is it that makes lock-free extensible hashing hard to achieve?
