@@ -10,8 +10,6 @@ except the first one,
     - which points to a node of key 0, 
     - whose next pointer is set to NULL.
 */
-void* pythia_init();
-
 typedef struct _marked* marked_ptr_t;
 typedef uint64_t pythia_key_t;
 
@@ -26,30 +24,7 @@ struct node_type{
     marked_ptr_t next;
 };
 
-/* 
------------------------------------------------------------------ 
-The accessible shared data structures are */
-/* the array of buckets T,*/
-marked_ptr_t** T;
-/* a variable size storing the current table size, */
-uint64_t pythia_size;
-/* and a counter count denoting the number of regular keys currently
- inside the structure.*/
-uint64_t pythia_count;
-/* 
------------------------------------------------------------------ */
 
-
-
-
-/* 
------------------------------------------------------------------
-Each thread has three private variables prev, cur, and next, 
-that point at a currently searched node in the list, its predecessor,
-and its successor.*/
-marked_ptr_t* pythia_prev;
-marked_ptr_t pythia_curr;
-marked_ptr_t pythia_next;
 
 /*
 They are set by list find to point at the nodes around the searched key,
@@ -88,4 +63,11 @@ In this case, list insert will fail, but the private variable cur will point to 
 The newly created dummy node can be freed and the value of cur used.
 */
 void pythia_bucket_init(uint64_t bucket_id);
+int pythia_insert_ycsb(const char *key);
+int pythia_insert(pythia_key_t key);
+int pythia_delete(pythia_key_t key);
+int pythia_find(pythia_key_t key);
+void pythia_destroy();
+void pythia_init();
+
 #endif
