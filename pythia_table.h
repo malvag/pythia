@@ -19,9 +19,17 @@ struct _marked{
     struct node_type* node;
 } __attribute__((packed));
 
+struct kv_pair{
+    uint64_t kv_key_size;
+    uint64_t kv_value_size;
+    char* kv_key;
+    char* kv_value;
+}__attribute__((packed));
+
 struct node_type{
     pythia_key_t key;
     marked_ptr_t next;
+    struct kv_pair* kv;
 };
 
 
@@ -64,9 +72,9 @@ The newly created dummy node can be freed and the value of cur used.
 */
 void pythia_bucket_init(uint64_t bucket_id);
 int pythia_insert_ycsb(const char *key);
-int pythia_insert(pythia_key_t key);
+int pythia_insert(char* key, char* value);
 int pythia_delete(pythia_key_t key);
-int pythia_find(pythia_key_t key);
+int pythia_find(char* key);
 void pythia_destroy();
 void pythia_init();
 

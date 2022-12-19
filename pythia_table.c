@@ -145,12 +145,12 @@ try_again:
   }
   assert(0);
 done_success:
-  atomic_store(&pythia_prev,prev);
-  atomic_store(&pythia_curr,cur);
+  atomic_store(&pythia_prev, prev);
+  atomic_store(&pythia_curr, cur);
   return 1;
 done:
-  atomic_store(&pythia_prev,prev);
-  atomic_store(&pythia_curr,cur);
+  atomic_store(&pythia_prev, prev);
+  atomic_store(&pythia_curr, cur);
   return 0;
 }
 
@@ -210,9 +210,36 @@ A check is then performed to test whether the load factor has been exceeded.
 If so, the table size is doubled,
 causing a new segment of uninitialized buckets to be appended.
 */
-int pythia_insert(pythia_key_t key) {
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+// Donald E. Knuth
+uint64_t hash(const char *Key) {
+  uint64_t hash = (uint64_t)strlen(Key);
+  while (*Key) {
+    hash <<= 5;
+    hash ^= (hash >> 27);
+    hash ^= *Key;
+    Key++;
+  }
+  return hash % pythia_size;
+}
+
+int pythia_insert(char *kv_key, char *kv_value) {
+  uint64_t key = hash(kv_key);
   struct node_type *node = new_node(pythia_regular_key(key));
+  node->key = key;
   uint64_t bucket_id = key % pythia_size;
+  node->kv = (struct kv_pair *)malloc(sizeof(struct kv_pair));
+  node->kv->kv_key_size = strlen(kv_key);
+  node->kv->kv_value_size = strlen(kv_value);
+  // node->kv->kv_key = kv_key;
+  // node->kv->kv_value = kv_value;
+  node->kv->kv_key = (char *)malloc(node->kv->kv_key_size);
+  node->kv->kv_value = (char *)malloc(node->kv->kv_value_size);
+  memcpy(node->kv->kv_key, kv_key, node->kv->kv_key_size);
+  memcpy(node->kv->kv_value, kv_key, node->kv->kv_value_size);
+  // TODO: lookout
 
   // printf("-->Attempt to insert: pythia_count_and_size %lu %lu and in bucket
   // %ld\n",
@@ -245,12 +272,27 @@ int pythia_delete(pythia_key_t key) {
   return 1;
 }
 
-int pythia_find(pythia_key_t key) {
+int pythia_find(char *kv_key) {
+  struct node_type *kv_pair = NULL;
+  uint64_t key = hash(kv_key);
   uint64_t bucket_id = key % pythia_size;
   if ((*T)[bucket_id] == UNINITIALIZED)
     pythia_bucket_init(bucket_id);
 
+  // if (list_find(&((*T)[bucket_id]), pythia_regular_key(key))) {
+  //   marked_ptr_t kv_node = atomic_load(&pythia_curr)->node;
+  //   if (kv_node != NULL)
+  //     return NULL;
+  //   if (kv_pair == NULL)
+  //     return NULL;
+
+  //   kv_pair = kv_node->node;
+
+  //   assert(kv_pair->kv != NULL);
+  //   return kv_pair->kv->kv_value;
+  // }
   return list_find(&((*T)[bucket_id]), pythia_regular_key(key));
+  // return NULL;
 }
 
 void pythia_init() {
@@ -277,7 +319,7 @@ void pythia_bucket_init(uint64_t bucket_id) {
   /*(*T)[bucket_id]->node = dummy;*/
 }
 
-void pythia_destroy(){
+void pythia_destroy() {
   // uint64_t i = 0, counter = 0;
   // marked_ptr_t head = (*T)[i];
   // marked_ptr_t cur = head;

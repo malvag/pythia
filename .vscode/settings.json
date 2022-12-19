@@ -8,7 +8,8 @@
         "unordered_set": "c",
         "compare": "c",
         "stdio.h": "c",
-        "functional": "cpp"
+        "functional": "cpp",
+        "unistd.h": "c"
     },
     "C_Cpp.default.configurationProvider": "ms-vscode.makefile-tools"
 }
