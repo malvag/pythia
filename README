@@ -1,3 +1,1 @@
-As we explain shortly, it is based on a novel recursively split-ordered list structure.
-
-What is it that makes lock-free extensible hashing hard to achieve?
+A lock-free extensible hash table that was implemented based on the paper by Ori Shalev and Nir Shavit. 2006. Split-ordered lists: Lock-free extensible hash tables. J. ACM 53, 3 (May 2006), 379–405. https://doi.org/10.1145/1147954.1147958
